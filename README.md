@@ -52,8 +52,32 @@ Este projeto é um blog voltado para a área de TI, onde profissionais de tecnol
 ## Dockerização
 
 1. Para rodar o projeto em um contêiner Docker, siga os passos abaixo:
+
     ```bash
     docker-compose up -d
+    ```
+
+2. Acesse o contêiner da aplicação:
+
+    ```bash
+    docker-compose exec app bash
+    ```
+
+3. Dentro do contêiner, instale as dependências do Composer:
+
+    ```bash
+    composer install
+    ```
+
+4. Gere a chave da aplicação:
+
+    ```bash
+    php artisan key:generate
+    ```
+
+5. Execute as migrações:
+    ```bash
+    php artisan migrate
     ```
 
 ## Contribuição

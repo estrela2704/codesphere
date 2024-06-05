@@ -1,0 +1,49 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        image: codesphere-app
+        container_name: codesphere-app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - .:/var/www
+            - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+        networks:
+            - codesphere
+
+    webserver:
+        image: nginx:latest
+        container_name: nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+        volumes:
+            - .:/var/www
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - codesphere
+
+    db:
+        image: mysql:8.0
+        container_name: codesphere_db
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: codesphere_db
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - codesphere
+
+networks:
+    codesphere:
+
+volumes:
+    mysql_data:
