@@ -1,4 +1,4 @@
-# Blog de TI
+# CodeSphere
 
 ## Visão Geral
 
@@ -16,8 +16,8 @@ Este projeto é um blog voltado para a área de TI, onde profissionais de tecnol
 1. Clone o repositório:
 
     ```bash
-    git clone https://github.com/SEU_USUARIO/blog-de-ti.git
-    cd blog-de-ti
+    git clone https://github.com/estrela2704/codesphere.git
+    cd codesphere
 
     ```
 
