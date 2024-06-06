@@ -37,6 +37,8 @@ services:
             MYSQL_DATABASE: codesphere_db
             MYSQL_USER: laravel
             MYSQL_PASSWORD: secret
+        ports:
+            - "3306:3306"
         volumes:
             - mysql_data:/var/lib/mysql
         networks:
