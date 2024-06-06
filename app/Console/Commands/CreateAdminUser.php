@@ -38,7 +38,7 @@ class CreateAdminUser extends Command
         $birth_date = Carbon::now()->subYears(18)->toDateString(); // Define a data de nascimento padrão como 18 anos atrás
 
         // Create the admin user
-        $user = User::create([
+        User::create([
             'name' => $name,
             'lastname' => $lastname,
             'email' => $email,
