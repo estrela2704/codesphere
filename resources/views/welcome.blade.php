@@ -33,16 +33,16 @@
         </div>
 
         <div class="button-container mt-1 flex justify-between">
-            <x-primary-button class="ms-4">
-                <a href="{{ route('login') }}">
+            <a href="{{ route('login') }}">
+                <x-primary-button class="ms-4">
                     Entrar
-                </a>
-            </x-primary-button>
-            <x-primary-button class="ms-4">
-                <a href="{{ route('register') }}">
+                </x-primary-button>
+            </a>
+            <a href="{{ route('register') }}">
+                <x-primary-button class="ms-4">
                     Registrar
-                </a>
-            </x-primary-button>
+                </x-primary-button>
+            </a>
         </div>
     </div>
 </body>
