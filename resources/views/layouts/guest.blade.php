@@ -12,20 +12,31 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <style>
+        .custom-padding {
+            margin-bottom: 2.5rem;
+        }
+
+        .custom-margin-top {
+            margin-top: 2.5rem;
+            /* Margem superior */
+        }
+    </style>
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-        <div>
+        <div class="custom-margin-top">
             <a href="/">
                 <img src="{{ asset('img/logo.png') }}" width="200px" alt="Logo" class="logo mt-5">
             </a>
         </div>
 
         <div
-            class="w-full sm:max-w-md mt-6 mb-8 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+            class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg custom-padding">
             {{ $slot }}
         </div>
     </div>
