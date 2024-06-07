@@ -2,42 +2,19 @@
 
 namespace App\Application\Http\Controllers\Auth;
 
-use App\Application\Notifications\ResetPasswordNotification;
 use App\Application\Http\Controllers\Controller;
-use App\Infra\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Domain\Services\NotificationService;
+use App\Domain\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Carbon\Carbon;
 
 
 class PasswordResetLinkController extends Controller
 {
-    private static function generateResetToken(User $user)
+
+    public function __construct(protected UserService $userService, protected NotificationService $notificationService)
     {
-
-        $user = DB::table('users')->where('email', $user->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'Email not found.'], 404);
-        }
-
-        // Cria um token
-        $token = Str::random(60);
-
-        // Remove tokens antigos
-        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
-
-        // Insere o novo token na tabela `password_resets`
-        DB::table('password_reset_tokens')->insert([
-            'email' => $user->email,
-            'token' => bcrypt($token),
-            'created_at' => Carbon::now()
-        ]);
-
-        return $token;
     }
     /**
      * Display the password reset link request view.
@@ -59,10 +36,9 @@ class PasswordResetLinkController extends Controller
         ]);
 
         $status = [];
-        $user = User::where('email', $request->email)->first();
+        $user = $this->userService->getUserByEmail($request->email);
         if ($user) {
-            $token = self::generateResetToken($user);
-            $user->notify(new ResetPasswordNotification($token));
+            $this->notificationService->sendResetPasswordNotification($user->email);
             $status = ["feedback" => 'sent', "msg" => 'Enviamos o link para redefinir sua senha por e-mail.'];
         } else {
             $status = ["feedback" => 'error', "msg" => 'Não conseguimos encontrar um usuário com esse endereço de e-mail.'];

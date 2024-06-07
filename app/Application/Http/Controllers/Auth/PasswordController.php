@@ -3,13 +3,16 @@
 namespace App\Application\Http\Controllers\Auth;
 
 use App\Application\Http\Controllers\Controller;
+use App\Domain\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class PasswordController extends Controller
 {
+    public function __construct(protected UserService $userService)
+    {
+    }
     /**
      * Update the user's password.
      */
@@ -20,9 +23,7 @@ class PasswordController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
-        $request->user()->update([
-            'password' => Hash::make($validated['password']),
-        ]);
+        $this->userService->updatePassword($request->user(), $validated['password']);
 
         return back()->with('status', 'password-updated');
     }

@@ -4,7 +4,7 @@ namespace App\Application\Http\Controllers\Auth;
 
 use App\Application\Http\Controllers\Controller;
 use App\Application\Http\Requests\RegisterUserRequest;
-use App\Application\Notifications\VerifyEmailNotification;
+use App\Domain\Services\NotificationService;
 use App\Domain\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
 
-    public function __construct(protected UserService $userService)
+    public function __construct(protected UserService $userService, protected NotificationService $notificationService)
     {
     }
     /**
@@ -32,13 +32,9 @@ class RegisteredUserController extends Controller
      */
     public function store(RegisterUserRequest $request): RedirectResponse
     {
-
         $user = $this->userService->create($request->validated());
-
-        $user->notify(new VerifyEmailNotification($user->name));
-
+        $this->notificationService->sendVerifyEmailNotification($user);
         Auth::login($user);
-
         return redirect(route('dashboard', absolute: false));
     }
 }
