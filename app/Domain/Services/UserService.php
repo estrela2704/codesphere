@@ -3,19 +3,12 @@
 namespace App\Domain\Services;
 
 use App\Infra\Models\User;
-use App\Domain\Services\NotificationService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
-
-
 class UserService
 {
-
-    public function __construct(protected NotificationService $notificationService)
-    {
-    }
     public function create(array $data): User
     {
         $user = User::create([
@@ -27,9 +20,6 @@ class UserService
             'password' => Hash::make($data['password']),
             'role' => 'user',
         ]);
-
-        $this->notificationService->sendVerifyEmailNotification($user->email);
-
         return $user;
     }
 

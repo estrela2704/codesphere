@@ -2,6 +2,7 @@
 
 namespace App\Application\Http\Controllers\Auth;
 
+use App\Events\UserRegistred;
 use App\Application\Http\Controllers\Controller;
 use App\Application\Http\Requests\RegisterUserRequest;
 use App\Domain\Services\UserService;
@@ -32,6 +33,7 @@ class RegisteredUserController extends Controller
     public function store(RegisterUserRequest $request): RedirectResponse
     {
         $user = $this->userService->create($request->validated());
+        event(new UserRegistred($user->email));
         Auth::login($user);
         return redirect(route('dashboard', absolute: false));
     }

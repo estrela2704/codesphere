@@ -14,6 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+
         $this->app->singleton(UserService::class);
 
         $this->app->singleton(PasswordResetService::class, function ($app) {
