@@ -17,12 +17,11 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
-        $user = $this->userService->getUserByEmail($request->user()->email);
-        if ($this->userService->hasVerifiedEmail($user)) {
+        if ($this->userService->hasVerifiedEmail($request->user()->email)) {
             return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
         }
 
-        $this->userService->markHasVerified($user);
+        $this->userService->markHasVerified($request->user()->email);
 
         return redirect()->intended(route('dashboard', absolute: false) . '?verified=1');
     }

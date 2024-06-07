@@ -3,6 +3,7 @@
 namespace App\Domain\Services;
 
 use App\Infra\Models\User;
+use App\Domain\Services\NotificationService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -12,6 +13,9 @@ use Carbon\Carbon;
 class UserService
 {
 
+    public function __construct(protected NotificationService $notificationService)
+    {
+    }
     public function create(array $data): User
     {
         $user = User::create([
@@ -24,6 +28,8 @@ class UserService
             'role' => 'user',
         ]);
 
+        $this->notificationService->sendVerifyEmailNotification($user->email);
+
         return $user;
     }
 
@@ -32,22 +38,23 @@ class UserService
         $user->notify($instance);
     }
 
-    public function getUserByEmail($email): User|null
+    public function getUserByEmail(string $email): User|null
     {
         return User::where('email', $email)->first();
     }
 
-    public function hasVerifiedEmail(User $user): bool
+    public function hasVerifiedEmail(string $email): bool
     {
+        $user = $this->getUserByEmail($email);
         if (($user->email_verified_at == '') && ($user->email_verified_at == NULL)) {
             return false;
         }
-
         return true;
     }
 
-    public function markHasVerified(User $user): void
+    public function markHasVerified(string $email): void
     {
+        $user = $this->getUserByEmail($email);
         $user->update([
             'email_verified_at' => Carbon::now()
         ]);

@@ -4,7 +4,6 @@ namespace App\Application\Http\Controllers\Auth;
 
 use App\Application\Http\Controllers\Controller;
 use App\Domain\Services\NotificationService;
-use App\Domain\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,7 +12,7 @@ use Illuminate\View\View;
 class PasswordResetLinkController extends Controller
 {
 
-    public function __construct(protected UserService $userService, protected NotificationService $notificationService)
+    public function __construct(protected NotificationService $notificationService)
     {
     }
     /**
@@ -35,14 +34,7 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $status = [];
-        $user = $this->userService->getUserByEmail($request->email);
-        if ($user) {
-            $this->notificationService->sendResetPasswordNotification($user->email);
-            $status = ["feedback" => 'sent', "msg" => 'Enviamos o link para redefinir sua senha por e-mail.'];
-        } else {
-            $status = ["feedback" => 'error', "msg" => 'Não conseguimos encontrar um usuário com esse endereço de e-mail.'];
-        }
+        $status = $this->notificationService->sendResetPasswordNotification($request->email);
 
         return $status["feedback"] == "sent"
             ? back()->with('status', __($status['msg']))
