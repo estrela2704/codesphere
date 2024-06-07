@@ -12,7 +12,7 @@ class NotificationService
     {
     }
 
-    public function sendVerifyEmailNotification($email): void
+    public function sendVerifyEmailNotification(string $email): void
     {
         $user = $this->userService->getUserByEmail($email);
         $this->userService->notify($user, new VerifyEmailNotification($user->name));

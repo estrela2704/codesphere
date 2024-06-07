@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
     public function store(RegisterUserRequest $request): RedirectResponse
     {
         $user = $this->userService->create($request->validated());
-        $this->notificationService->sendVerifyEmailNotification($user);
+        $this->notificationService->sendVerifyEmailNotification($user->email);
         Auth::login($user);
         return redirect(route('dashboard', absolute: false));
     }
