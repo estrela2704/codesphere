@@ -2,7 +2,7 @@
 
 namespace App\Domain\Services;
 
-use Illuminate\Support\Facades\DB;
+use App\Domain\Repositories\IPasswordResetTokenRepository;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
@@ -10,15 +10,13 @@ use Carbon\Carbon;
 
 class PasswordResetService
 {
-    public function __construct(protected UserService $userService)
+    public function __construct(protected UserService $userService, protected IPasswordResetTokenRepository $passwordResetTokenRepository)
     {
 
     }
     public function validateResetToken(array $params)
     {
-        $resetToken = DB::table('password_reset_tokens')
-            ->where('email', $params['email'])
-            ->first();
+        $resetToken = $this->passwordResetTokenRepository->findByEmail($params['email']);
 
         if (!$resetToken) {
             return ['feedback' => 'error', 'msg' => 'Token inválido ou expirado'];
@@ -33,21 +31,28 @@ class PasswordResetService
             return ['feedback' => 'error', 'msg' => 'Token expirado'];
         }
 
-        $this->userService->updatePassword($this->userService->getUserByEmail($params['email']), $params['password']);
+        $this->userService->updatePassword($params['email'], $params['password']);
 
-        DB::table('password_reset_tokens')->where('email', $params['email'])->delete();
+        $this->passwordResetTokenRepository->delete($resetToken->id);
 
         return ['feedback' => 'success', 'msg' => 'Senha redefinida com sucesso'];
     }
-    public static function generateResetToken($email)
+    public function generateResetToken($email)
     {
         $token = Str::random(60);
-        DB::table('password_reset_tokens')->where('email', $email)->delete();
-        DB::table('password_reset_tokens')->insert([
+        $resetToken = $this->passwordResetTokenRepository->findByEmail($email);
+        if ($resetToken) {
+            $this->passwordResetTokenRepository->delete($resetToken->id);
+        }
+
+        $data = [
             'email' => $email,
             'token' => bcrypt($token),
             'created_at' => Carbon::now()
-        ]);
+        ];
+
+        $this->passwordResetTokenRepository->create($data);
+
         return $token;
     }
 }

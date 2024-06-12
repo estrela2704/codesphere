@@ -15,7 +15,7 @@ class NotificationService
     public function sendVerifyEmailNotification(string $email): void
     {
         $user = $this->userService->getUserByEmail($email);
-        $this->userService->notify($user, new VerifyEmailNotification($user->name));
+        $this->userService->notify($user->id, new VerifyEmailNotification($user->name));
     }
 
     public function sendResetPasswordNotification(string $email): array
@@ -25,7 +25,7 @@ class NotificationService
         if (!$user) {
             return ["feedback" => 'error', "msg" => 'Não conseguimos encontrar um usuário com esse endereço de e-mail.'];
         }
-        $this->userService->notify($user, new ResetPasswordNotification($token));
+        $this->userService->notify($user->id, new ResetPasswordNotification($token));
         return ["feedback" => 'sent', "msg" => 'Enviamos o link para redefinir sua senha por e-mail.'];
     }
 

@@ -23,7 +23,7 @@ class PasswordController extends Controller
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
-        $this->userService->updatePassword($request->user(), $validated['password']);
+        $this->userService->updatePassword($request->user()->email, $validated['password']);
 
         return back()->with('status', 'password-updated');
     }

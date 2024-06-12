@@ -3,6 +3,7 @@
 namespace App\Application\Http\Controllers;
 
 use App\Application\Http\Requests\ProfileUpdateRequest;
+use App\Domain\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,9 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function __construct(protected UserService $userService)
+    {
+    }
     /**
      * Display the user's profile form.
      */
@@ -26,13 +30,14 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $userData = $request->validated();
+        $user = $this->userService->getUserByEmail($request->user()->email);
+        if ($request->validated('email') !== $user->email) {
+            $userData['email_verified_at'] = null;
         }
 
-        $request->user()->save();
+        $this->userService->update($userData, $request->user()->id);
+
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -46,11 +51,9 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
-
         Auth::logout();
 
-        $user->delete();
+        $this->userService->deleteUser($request->user()->id);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

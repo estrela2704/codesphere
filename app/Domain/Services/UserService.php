@@ -2,35 +2,35 @@
 
 namespace App\Domain\Services;
 
-use App\Infra\Models\User;
+use App\Domain\Repositories\IUserRepository;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class UserService
 {
-    public function create(array $data): User
+    public function __construct(protected IUserRepository $userRepository)
     {
-        $user = User::create([
-            'uuid' => (string) Str::uuid(),
-            'name' => $data['name'],
-            'lastname' => $data['lastname'],
-            'birth_date' => $data['birth_date'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => 'user',
-        ]);
+    }
+    public function create(array $data)
+    {
+        $this->userRepository->create($data);
+        $user = $this->userRepository->findByEmail($data['email']);
         return $user;
     }
 
-    public function notify(User $user, $instance)
+    public function update($userData, int $id)
     {
+        $this->userRepository->update($userData, $id);
+    }
+    public function notify(int $id, $instance)
+    {
+        $user = $this->userRepository->findById($id);
         $user->notify($instance);
     }
 
-    public function getUserByEmail(string $email): User|null
+    public function getUserByEmail(string $email)
     {
-        return User::where('email', $email)->first();
+        return $this->userRepository->findByEmail($email);
     }
 
     public function hasVerifiedEmail(string $email): bool
@@ -45,15 +45,24 @@ class UserService
     public function markHasVerified(string $email): void
     {
         $user = $this->getUserByEmail($email);
-        $user->update([
+        $params = [
             'email_verified_at' => Carbon::now()
-        ]);
+        ];
+        $this->userRepository->update($params, $user->id);
     }
 
-    public function updatePassword(User $user, $newPassword): void
+    public function updatePassword($email, $newPassword): void
     {
-        $user->update([
+        $user = $this->userRepository->findByEmail($email);
+        $params = [
             'password' => Hash::make($newPassword),
-        ]);
+        ];
+        $this->userRepository->update($params, $user->id);
+    }
+
+    public function deleteUser($id)
+    {
+        $user = $this->userRepository->findById($id);
+        $this->userRepository->delete($user->id);
     }
 }

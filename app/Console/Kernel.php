@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Application\Console;
+namespace App\Console;
 
+use App\Application\Console\Commands\CreateAdminUser;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +14,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\CreateAdminUser::class,
+        CreateAdminUser::class,
     ];
     /**
      * Define the application's command schedule.
