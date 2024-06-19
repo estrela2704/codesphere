@@ -7,6 +7,20 @@ use Illuminate\Support\Facades\DB;
 
 class PasswordResetTokenRepositoryEloquent implements IPasswordResetTokenRepository
 {
+    function all()
+    {
+    }
+    function findById($id)
+    {
+        return DB::table('password_reset_tokens')
+            ->where('id', $id)
+            ->first();
+    }
+    function update(array $params, $id)
+    {
+        $passwordResetToken = $this->findById($id);
+        $passwordResetToken->update($params);
+    }
     function findByEmail($email)
     {
         return DB::table('password_reset_tokens')

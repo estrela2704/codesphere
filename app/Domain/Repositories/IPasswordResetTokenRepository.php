@@ -2,9 +2,7 @@
 
 namespace App\Domain\Repositories;
 
-interface IPasswordResetTokenRepository
+interface IPasswordResetTokenRepository extends IGenericRepository
 {
     function findByEmail($email);
-    function create(array $data);
-    function delete($id);
 }

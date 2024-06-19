@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Hash;
 
 class UserRepositoryEloquent implements IUserRepository
 {
+    function all()
+    {
+    }
     function findByEmail($email)
     {
         return User::where('email', $email)->first();
